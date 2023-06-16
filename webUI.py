@@ -196,7 +196,7 @@ with gr.Blocks(
                     auto_f0 = gr.Checkbox(label="是否使用自动F0预测（默认否）", value=False)
                     F0_mean_pooling = gr.Checkbox(label="是否使用F0平均池化（默认否）", value=False)
                     vc_transform = gr.Number(label="变调（整数）", value=0)
-                    cluster_ratio = gr.Number(label="聚类模型混合比例", value=0)
+                    cluster_ratio = gr.Number(label="cluster_ratio", value=0)
                     slice_db = gr.Number(label="slice_db", value=-40)
                     noise_scale = gr.Number(label="noise_scale", value=0.4)
                 with gr.Column():
@@ -205,7 +205,7 @@ with gr.Blocks(
                     lg_num = gr.Number(label="lg_num", value=0)
                     lgr_num = gr.Number(label="lgr_num", value=0.75)
                     enhancer_adaptive_key = gr.Number(label="enhancer_adaptive_key", value=0)
-                    cr_threshold = gr.Number(label="F0过滤阈值（请打开F0_mean_pooling. 减小cr_threshold可减少跑调，但哑音增多",
+                    cr_threshold = gr.Number(label="F0过滤阈值（请打开F0_mean_pooling，减小cr_threshold可减少跑调，但哑音增多)",
                                              value=0.05)
             with gr.Tabs():
                 with gr.TabItem("音频转音频"):
