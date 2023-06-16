@@ -1,3 +1,3 @@
 logs/44k/*
-pretrain/checkpoint_best_legacy_500.pt
+hubert/checkpoint_best_legacy_500.pt
 .idea

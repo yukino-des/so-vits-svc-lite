@@ -168,6 +168,11 @@ def vc_fn2(sid, input_audio, vc_transform, auto_f0, cluster_ratio, slice_db, noi
     return a, b
 
 
+def debug_change():
+    global debug
+    debug = debug_button.value
+
+
 with gr.Blocks(
         theme=gr.themes.Base(
             primary_hue=gr.themes.colors.green,
@@ -175,7 +180,7 @@ with gr.Blocks(
             font_mono=['JetBrains Mono', "Consolas", 'Courier New']),
 ) as app:
     with gr.Tabs():
-        with gr.TabItem("预测"):
+        with gr.TabItem("so-vite-svc-lite"):
             with gr.Row(variant="panel"):
                 with gr.Column():
                     model_path = gr.File(label="选择模型文件")
@@ -221,4 +226,21 @@ with gr.Blocks(
                     vc_output1 = gr.Textbox(label="Output Message")
                 with gr.Column():
                     vc_output2 = gr.Audio(label="Output Audio", interactive=False)
+
+    with gr.Tabs():
+        with gr.Row(variant="panel"):
+            with gr.Column():
+                debug_button = gr.Checkbox(label="debug模式", value=debug)
+        vc_submit.click(vc_fn,
+                        [sid, vc_input3, vc_transform, auto_f0, cluster_ratio, slice_db, noise_scale, pad_seconds,
+                         cl_num, lg_num, lgr_num, F0_mean_pooling, enhancer_adaptive_key, cr_threshold],
+                        [vc_output1, vc_output2])
+        vc_submit2.click(vc_fn2,
+                         [sid, vc_input3, vc_transform, auto_f0, cluster_ratio, slice_db, noise_scale, pad_seconds,
+                          cl_num, lg_num, lgr_num, text2tts, tts_rate, tts_voice, F0_mean_pooling,
+                          enhancer_adaptive_key, cr_threshold], [vc_output1, vc_output2])
+        debug_button.change(debug_change, [], [])
+        model_load_button.click(modelAnalysis, [model_path, config_path, cluster_model_path, device, enhance],
+                                [sid, sid_output])
+        model_unload_button.click(modelUnload, [], [sid, sid_output])
     app.launch()
