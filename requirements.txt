@@ -11,9 +11,6 @@ torchcrepe
 tqdm
 scikit-maad
 praat-parselmouth
-onnx
-onnxsim
-onnxoptimizer
 fairseq==0.12.2
 librosa==0.9.1
 tensorboard
