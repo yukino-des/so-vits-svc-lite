@@ -6,7 +6,7 @@ import subprocess
 import time
 import traceback
 
-# os.system("wget -P cvec/ https://huggingface.co/spaces/innnky/nanami/resolve/main/checkpoint_best_legacy_500.pt")
+# https://huggingface.co/spaces/innnky/nanami/resolve/main/checkpoint_best_legacy_500.pt"
 import gradio as gr
 import gradio.processing_utils as gr_pu
 import librosa
