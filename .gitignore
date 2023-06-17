@@ -1,0 +1,5 @@
+logs/44k/*
+hubert/checkpoint_best_legacy_500.pt
+.idea
+.DS_Store
+*/.DS_Store
