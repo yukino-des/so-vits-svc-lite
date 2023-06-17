@@ -31,7 +31,7 @@ def load_wav_to_torch(full_path, target_sr=None, return_empty_on_exception=False
     else:  # if audio data is type fp32
         max_mag = max(np.amax(data), -np.amin(data))
         max_mag = (2 ** 31) + 1 if max_mag > (2 ** 15) else ((
-                                                                         2 ** 15) + 1 if max_mag > 1.01 else 1.0)  # data should be either 16-bit INT, 32-bit INT or [-1 to 1] float32
+                                                                     2 ** 15) + 1 if max_mag > 1.01 else 1.0)  # data should be either 16-bit INT, 32-bit INT or [-1 to 1] float32
 
     data = torch.FloatTensor(data.astype(np.float32)) / max_mag
 
