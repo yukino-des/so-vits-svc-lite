@@ -180,7 +180,7 @@ with gr.Blocks(
             font_mono=['JetBrains Mono', "Consolas", 'Courier New']),
 ) as app:
     with gr.Tabs():
-        with gr.TabItem("so-vite-svc-lite"):
+        with gr.TabItem("so-vits-svc-lite (https://github.com/yukino-des/so-vits-svc-lite)"):
             with gr.Row(variant="panel"):
                 with gr.Column():
                     model_path = gr.File(label="选择模型文件")
