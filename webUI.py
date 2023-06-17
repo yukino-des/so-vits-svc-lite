@@ -93,7 +93,6 @@ def vc_fn(sid, input_audio, vc_transform, auto_f0, cluster_ratio, slice_db, nois
         if model is None:
             raise gr.Error("无模型！")
         sampling_rate, audio = input_audio
-        # print(audio.shape,sampling_rate)
         audio = (audio / np.iinfo(audio.dtype).max).astype(np.float32)
         if len(audio.shape) > 1:
             audio = librosa.to_mono(audio.transpose(1, 0))
@@ -168,69 +167,54 @@ def vc_fn2(sid, input_audio, vc_transform, auto_f0, cluster_ratio, slice_db, noi
     return a, b
 
 
-def debug_change():
-    global debug
-    debug = debug_button.value
-
-
 with gr.Blocks(
         theme=gr.themes.Base(
             primary_hue=gr.themes.colors.green,
             font=["Source Sans Pro", "Arial", "sans-serif"],
             font_mono=['JetBrains Mono', "Consolas", 'Courier New']),
 ) as app:
-    with gr.Tabs():
-        with gr.TabItem("so-vits-svc-lite (https://github.com/yukino-des/so-vits-svc-lite)"):
-            with gr.Row(variant="panel"):
-                with gr.Column():
-                    model_path = gr.File(label="选择模型文件")
-                    config_path = gr.File(label="选择配置文件")
-                    cluster_model_path = gr.File(label="选择聚类模型文件（可选）")
-                    device = gr.Dropdown(label="CPU or GPU", choices=["Auto", *cuda.keys(), "cpu"],
-                                         value="Auto")
-                    enhance = gr.Checkbox(label="是否使用NSF_HIFIGAN增强（默认否）",
-                                          value=False)
-                with gr.Column():
-                    model_load_button = gr.Button(value="加载模型", variant="primary")
-                    model_unload_button = gr.Button(value="卸载模型", variant="primary")
-                    sid = gr.Dropdown(label="音色")
-                    sid_output = gr.Textbox(label="Output Message")
+    with gr.Row(variant="panel"):
+        with gr.Column():
+            model_path = gr.File(label="模型文件")
+            config_path = gr.File(label="配置文件")
+            cluster_model_path = gr.File(label="聚类模型文件（可选）")
+            device = gr.Dropdown(label="CPU or GPU", choices=["Auto", *cuda.keys(), "cpu"],
+                                 value="Auto")
+            enhance = gr.Checkbox(label="是否使用NSF_HIFIGAN增强（默认否）",
+                                  value=False)
+            auto_f0 = gr.Checkbox(label="是否使用自动F0预测（默认否）", value=False)
+            F0_mean_pooling = gr.Checkbox(label="是否使用F0平均池化（默认否）", value=False)
+        with gr.Column():
+            vc_transform = gr.Number(label="变调（整数）", value=0)
+            cluster_ratio = gr.Number(label="cluster_ratio", value=0)
+            slice_db = gr.Number(label="slice_db", value=-40)
+            noise_scale = gr.Number(label="noise_scale", value=0.4)
+            pad_seconds = gr.Number(label="pad_seconds", value=0.5)
+            cl_num = gr.Number(label="cl_num", value=0)
+            lg_num = gr.Number(label="lg_num", value=0)
+            lgr_num = gr.Number(label="lgr_num", value=0.75)
+            enhancer_adaptive_key = gr.Number(label="enhancer_adaptive_key", value=0)
+            cr_threshold = gr.Number(label="F0过滤阈值（请打开F0平均池化，减小F0过滤阈值可减少跑调，但哑音增多）",
+                                     value=0.05)
+        with gr.Column():
+            model_load_button = gr.Button(value="加载模型", variant="primary")
+            model_unload_button = gr.Button(value="卸载模型", variant="primary")
+            sid = gr.Dropdown(label="音色")
+            sid_output = gr.Textbox(label="Output Message")
+    with gr.Row(variant="panel"):
+        with gr.Column():
+            with gr.TabItem("音频转音频"):
+                vc_input3 = gr.Audio(label="音频")
+                vc_submit = gr.Button("转换", variant="primary")
+            with gr.TabItem("文字转音频"):
+                text2tts = gr.Textbox(label="文字（请打开自动F0预测）")
+                tts_rate = gr.Number(label="语速", value=0)
+                tts_voice = gr.Radio(label="性别", choices=["男", "女"], value="男")
+                vc_submit2 = gr.Button("转换", variant="primary")
+        with gr.Column():
+            vc_output1 = gr.Textbox(label="Output Message")
+            vc_output2 = gr.Audio(label="Output Audio", interactive=False)
 
-            with gr.Row(variant="panel"):
-                with gr.Column():
-                    auto_f0 = gr.Checkbox(label="是否使用自动F0预测（默认否）", value=False)
-                    F0_mean_pooling = gr.Checkbox(label="是否使用F0平均池化（默认否）", value=False)
-                    vc_transform = gr.Number(label="变调（整数）", value=0)
-                    cluster_ratio = gr.Number(label="cluster_ratio", value=0)
-                    slice_db = gr.Number(label="slice_db", value=-40)
-                    noise_scale = gr.Number(label="noise_scale", value=0.4)
-                with gr.Column():
-                    pad_seconds = gr.Number(label="pad_seconds", value=0.5)
-                    cl_num = gr.Number(label="cl_num", value=0)
-                    lg_num = gr.Number(label="lg_num", value=0)
-                    lgr_num = gr.Number(label="lgr_num", value=0.75)
-                    enhancer_adaptive_key = gr.Number(label="enhancer_adaptive_key", value=0)
-                    cr_threshold = gr.Number(label="F0过滤阈值（请打开F0_mean_pooling，减小cr_threshold可减少跑调，但哑音增多)",
-                                             value=0.05)
-            with gr.Tabs():
-                with gr.TabItem("音频转音频"):
-                    vc_input3 = gr.Audio(label="选择音频")
-                    vc_submit = gr.Button("音频转换", variant="primary")
-                with gr.TabItem("文字转音频"):
-                    text2tts = gr.Textbox(label="输入文字（请打开auto_f0）")
-                    tts_rate = gr.Number(label="tts语速", value=0)
-                    tts_voice = gr.Radio(label="性别", choices=["男", "女"], value="男")
-                    vc_submit2 = gr.Button("文字转换", variant="primary")
-            with gr.Row():
-                with gr.Column():
-                    vc_output1 = gr.Textbox(label="Output Message")
-                with gr.Column():
-                    vc_output2 = gr.Audio(label="Output Audio", interactive=False)
-
-    with gr.Tabs():
-        with gr.Row(variant="panel"):
-            with gr.Column():
-                debug_button = gr.Checkbox(label="debug模式", value=debug)
         vc_submit.click(vc_fn,
                         [sid, vc_input3, vc_transform, auto_f0, cluster_ratio, slice_db, noise_scale, pad_seconds,
                          cl_num, lg_num, lgr_num, F0_mean_pooling, enhancer_adaptive_key, cr_threshold],
@@ -239,7 +223,6 @@ with gr.Blocks(
                          [sid, vc_input3, vc_transform, auto_f0, cluster_ratio, slice_db, noise_scale, pad_seconds,
                           cl_num, lg_num, lgr_num, text2tts, tts_rate, tts_voice, F0_mean_pooling,
                           enhancer_adaptive_key, cr_threshold], [vc_output1, vc_output2])
-        debug_button.change(debug_change, [], [])
         model_load_button.click(modelAnalysis, [model_path, config_path, cluster_model_path, device, enhance],
                                 [sid, sid_output])
         model_unload_button.click(modelUnload, [], [sid, sid_output])
